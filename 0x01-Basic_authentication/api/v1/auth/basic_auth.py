@@ -141,10 +141,12 @@ class BasicAuth:
                 decoded_base64_authorization_header, str):
             return None, None
 
-        if ':' not in decoded_base64_authorization_header:
+        credentials = decoded_base64_authorization_header.split(':', 1)
+        if len(credentials) != 2:
             return None, None
 
-        email, password = decoded_base64_authorization_header.split(':', 1)
+        email = credentials[0]
+        password = credentials[1]
         return email, password
 
     def user_object_from_credentials(
@@ -160,9 +162,9 @@ class BasicAuth:
             TypeVar('User'): The User instance, or None if not found or
             password is incorrect.
         """
-        if user_email is None or not isinstance(user_email, str) or
-        user_pwd is None or not isinstance(user_pwd, str)
-        return None
+        if user_email is None or not isinstance(user_email, str) or \
+           user_pwd is None or not isinstance(user_pwd, str):
+            return None
 
         users = User.search({'email': user_email})
         if not users:

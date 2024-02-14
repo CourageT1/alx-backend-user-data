@@ -2,7 +2,7 @@
 """
 Authentication module for the API
 """
-from typing import List, TypeV  ar
+from typing import List, TypeVar
 from flask import request
 
 
@@ -32,7 +32,8 @@ class Auth:
         Args:
             path (str): The path to check for authentication requirement.
             excluded_paths (List[str]): A list of paths that are excluded
-            from authentication.
+            from authentication. The paths in this list can contain "*" as
+            a wildcard to match any characters.
 
         Returns:
             bool: True if authentication is required, False otherwise.
@@ -44,7 +45,10 @@ class Auth:
         path = path.rstrip('/') + '/'
 
         for excluded_path in excluded_paths:
-            if path == excluded_path:
+            if excluded_path.endswith('*') and path.startswith(
+                    excluded_path[:-1]):
+                return False
+            elif path == excluded_path:
                 return False
 
         return True
